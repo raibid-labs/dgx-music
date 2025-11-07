@@ -68,6 +68,10 @@ class Settings(BaseSettings):
     enable_result_caching: bool = False  # Cache generated audio
     cache_ttl_seconds: int = 3600
 
+    # Retry Logic (Week 3)
+    max_retries: int = 3  # Maximum retry attempts for failed generations
+    retry_delay_seconds: float = 1.0  # Initial retry delay (exponential backoff)
+
     # Memory Management
     max_memory_gb: float = 30.0  # Peak memory budget
     unload_model_after_idle_seconds: Optional[int] = None  # Keep loaded by default
@@ -77,6 +81,11 @@ class Settings(BaseSettings):
     api_port: int = 8000
     api_workers: int = 1
     api_reload: bool = False  # Development only
+
+    # Rate Limiting (Week 3)
+    rate_limit_enabled: bool = True
+    rate_limit_per_minute: int = 10  # Requests per minute per IP
+    rate_limit_whitelist: list[str] = ["127.0.0.1", "localhost", "::1"]
 
     # Database
     db_echo: bool = False  # SQLAlchemy echo SQL statements
@@ -187,11 +196,14 @@ def print_settings():
     print(f"  Max Concurrent Jobs: {settings.max_concurrent_jobs}")
     print(f"  Model Caching: {settings.enable_model_caching}")
     print(f"  Max Memory: {settings.max_memory_gb} GB")
+    print(f"  Max Retries: {settings.max_retries}")
+    print(f"  Retry Delay: {settings.retry_delay_seconds}s")
     print()
     print("API:")
     print(f"  Host: {settings.api_host}")
     print(f"  Port: {settings.api_port}")
     print(f"  Workers: {settings.api_workers}")
+    print(f"  Rate Limit: {settings.rate_limit_per_minute}/min")
     print()
     print("LOGGING:")
     print(f"  Level: {settings.log_level}")
