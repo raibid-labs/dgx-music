@@ -7,7 +7,14 @@
 set -euo pipefail
 
 PYTORCH_DIR="${HOME}/pytorch-build"
-PYTHON_BIN="$(which python3)"
+# Use project venv if available, otherwise system python
+if [ -f "/home/beengud/raibid-labs/dgx-music/venv/bin/python3" ]; then
+    PYTHON_BIN="/home/beengud/raibid-labs/dgx-music/venv/bin/python3"
+    PIP_BIN="/home/beengud/raibid-labs/dgx-music/venv/bin/pip"
+else
+    PYTHON_BIN="$(which python3)"
+    PIP_BIN="$(which pip3)"
+fi
 
 echo "============================================================"
 echo "PyTorch Build for NVIDIA GB10 (Blackwell - Compute 12.1)"
@@ -33,11 +40,12 @@ if [ ! -d "pytorch" ]; then
     git submodule update --init --recursive
     echo "✅ PyTorch cloned"
 else
-    echo "Step 1: PyTorch already cloned, updating..."
+    echo "Step 1: PyTorch already cloned, verifying checkout..."
     cd pytorch
-    git pull
+    git checkout v2.9.0
+    git submodule sync
     git submodule update --init --recursive
-    echo "✅ PyTorch updated"
+    echo "✅ PyTorch ready (v2.9.0)"
 fi
 
 echo ""
@@ -46,12 +54,12 @@ echo "Step 2: Configuring build environment..."
 # Set CUDA paths
 export CUDA_HOME=/usr/local/cuda
 export PATH=$CUDA_HOME/bin:$PATH
-export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$CUDA_HOME/lib64:${LD_LIBRARY_PATH:-}
 
 # Configure PyTorch build for GB10
 export USE_CUDA=1
 export USE_CUDNN=1
-export USE_NCCL=1
+export USE_NCCL=0  # Disable NCCL (distributed training)
 
 # CRITICAL: Set CUDA architecture for GB10 (Blackwell)
 # GB10 has compute capability 12.1
@@ -63,6 +71,9 @@ export BUILD_TEST=0  # Skip building tests to save time
 export USE_FBGEMM=0  # Skip Facebook GEMM (not needed for music generation)
 export USE_KINETO=0  # Skip profiling library
 export USE_DISTRIBUTED=0  # Skip distributed training features
+export USE_FLASH_ATTENTION=0  # Disable flash attention (failing on GB10)
+export USE_XNNPACK=0  # Disable XNNPACK (failing build)
+export MAX_JOBS=4  # Limit parallel jobs to reduce memory pressure
 
 # Use ccache if available
 if command -v ccache &> /dev/null; then
@@ -82,8 +93,9 @@ echo ""
 
 # Install Python dependencies
 echo "Step 3: Installing Python build dependencies..."
-$PYTHON_BIN -m pip install --upgrade pip
-$PYTHON_BIN -m pip install numpy pyyaml mkl mkl-include setuptools cmake cffi typing_extensions
+$PIP_BIN install --upgrade pip
+# Note: MKL is x86_64 only, ARM64 uses OpenBLAS (already installed via apt)
+$PIP_BIN install numpy pyyaml setuptools cmake cffi typing_extensions
 
 echo "✅ Python dependencies installed"
 echo ""
