@@ -1,0 +1,147 @@
+{
+  "$schema": "https://claude.ai/schemas/project-config.json",
+  "version": "1.0.0",
+  "extends": "github:raibid-labs/workspace/templates/repo-types/python-ml.json",
+
+  "project": {
+    "name": "dgx-music",
+    "type": "python-ml",
+    "description": "Production-grade AI music generation and editing system for NVIDIA DGX Spark, combining cutting-edge music generation with professional DAW workflows",
+    "repository": "https://github.com/raibid-labs/dgx-music"
+  },
+
+  "language": {
+    "primary": "python",
+    "secondary": ["nushell", "yaml", "dockerfile"]
+  },
+
+  "contextFiles": [
+    "README.md",
+    "CLAUDE.md",
+    "Justfile",
+    "Tiltfile",
+    "requirements.txt",
+    "alembic.ini",
+    "pytest.ini",
+    "docs/AI_MUSIC_GENERATION_RESEARCH.md",
+    "docs/AI_MUSIC_TRAINING_RESEARCH.md",
+    "docs/CUTTING_EDGE_MUSIC_AI_2024_2025.md",
+    "docs/DGX_SPARK_PRODUCTION_ARCHITECTURE.md",
+    "services/**/*.py",
+    "scripts/**/*.nu",
+    "tests/**/*.py"
+  ],
+
+  "specialization": {
+    "domain": "AI Music Generation",
+    "hardware": "NVIDIA DGX Spark",
+    "models": [
+      "YuE - Full song generation",
+      "DiffRhythm - Fast rhythm synthesis",
+      "MusicGen - Controllable music generation",
+      "JASCO - Chord-conditioned generation"
+    ],
+    "integrations": [
+      "Ardour DAW via MCP",
+      "FluidSynth for MIDI rendering",
+      "Carla plugin host",
+      "Demucs for source separation",
+      "Spotify Basic Pitch for transcription"
+    ]
+  },
+
+  "architecture": {
+    "pattern": "Microservices",
+    "orchestration": "Kubernetes + Tilt",
+    "services": [
+      "orchestrator - Main orchestration agent",
+      "generation - AI generation workers",
+      "rendering - Audio rendering services",
+      "integration - Ardour/DAW integration"
+    ],
+    "storage": [
+      "PostgreSQL 15+ - Main database",
+      "Redis - Cache layer",
+      "FAISS - Vector search"
+    ]
+  },
+
+  "dgxContext": {
+    "workload": "AI music production and DAW integration",
+    "targetHardware": {
+      "platform": "DGX Spark",
+      "gpu": "NVIDIA GB10 Grace Blackwell Superchip",
+      "memory": "128GB unified LPDDR5x",
+      "cpu": "20-core ARM (10x Cortex-X925 + 10x Cortex-A725)",
+      "storage": "4TB SSD"
+    },
+    "performance": {
+      "musicGeneration16s": "12-18s",
+      "midiToAudio": "0.5-1.2s",
+      "audioToMidi": "<1s real-time",
+      "fullSong4m45s": "~10s with DiffRhythm"
+    },
+    "memoryAllocation": {
+      "total": "110GB optimized",
+      "yue": "24-80GB",
+      "diffRhythm": "8GB",
+      "musicGen": "8-24GB",
+      "jasco": "8GB"
+    }
+  },
+
+  "documentation": {
+    "primary": [
+      "README.md - Project overview",
+      "CLAUDE.md - Claude-specific context"
+    ],
+    "research": [
+      "docs/AI_MUSIC_GENERATION_RESEARCH.md - Complete pipeline exploration",
+      "docs/AI_MUSIC_TRAINING_RESEARCH.md - Training methodologies",
+      "docs/CUTTING_EDGE_MUSIC_AI_2024_2025.md - Latest open source models",
+      "docs/DGX_SPARK_PRODUCTION_ARCHITECTURE.md - Production architecture"
+    ],
+    "implementation": [
+      "Justfile - Task automation",
+      "Tiltfile - Development environment",
+      "PROJECT_STATUS.md - Current status"
+    ]
+  },
+
+  "additionalRules": [
+    "This is a DGX workload - optimize for GPU memory allocation (110GB total)",
+    "Microservices architecture with Kubernetes orchestration",
+    "Ardour DAW integration is primary use case",
+    "Support multiple AI models: YuE, DiffRhythm, MusicGen, JASCO",
+    "Real-time audio processing requirements",
+    "Database migrations managed with Alembic",
+    "Use Nushell for automation scripts",
+    "Follow text → MIDI → audio pipeline pattern"
+  ],
+
+  "workflows": {
+    "setup": [
+      "just init - Initialize project",
+      "tilt up - Start development environment"
+    ],
+    "development": [
+      "just test - Run test suite",
+      "just lint - Check code quality",
+      "just dev - Start development server"
+    ],
+    "training": [
+      "just train-model <genre> - Train custom model",
+      "just generate <prompt> - Generate music"
+    ],
+    "deployment": [
+      "just deploy production - Deploy to production"
+    ]
+  },
+
+  "mcpIntegration": {
+    "enabled": true,
+    "config": ".mcp.json",
+    "target": "Ardour DAW",
+    "description": "Integration with ardour-mcp server for DAW control"
+  }
+}
